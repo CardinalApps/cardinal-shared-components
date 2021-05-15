@@ -1,0 +1,84 @@
+<div class="settings-panel">
+    <form id="music-settings-form" method="post">
+
+    <div class="tabs" data-tab-row-title="{i18n{settings.main-title}}">
+      <!-- General settings -->
+      <div
+      class="tab"
+      data-tab-name="{i18n{settings.tab-name-general}}"
+      data-tab-slug="general"
+      data-tab-icon="home">
+
+        <div class="settings-pane">
+          <h2>{i18n{settings.tab-name-general}}</h2>
+
+          <!-- Language -->
+          {inc{/elements/music-settings/templates/general/lang.html}}
+
+          <!-- Start page -->
+          {inc{/elements/music-settings/templates/general/start-page.html}}
+
+          <!-- Updates -->
+          {inc{/elements/music-settings/templates/general/updates.html}}
+
+          <!-- Notifications -->
+          {inc{/elements/music-settings/templates/general/notifications.html}}
+        </div>
+      </div>
+
+      <!-- Playback settings -->
+      <div
+      class="tab"
+      data-tab-name="{i18n{settings.tab-name-music-playback}}"
+      data-tab-slug="playback"
+      data-tab-icon="headphones">
+
+        <div class="settings-pane">
+          <h2>{i18n{settings.tab-name-music-playback}}</h2>
+          
+          <!-- Playback flags -->
+          {inc{/elements/music-settings/templates/playback/flags.html}}
+        </div>
+      </div>
+
+      <!-- Theme settings -->
+      <div
+      class="tab"
+      data-tab-name="{i18n{settings.tab-name-theme}}"
+      data-tab-slug="theme"
+      data-tab-icon="palette">
+
+        <div class="settings-pane">
+          <h2>{i18n{settings.tab-name-theme}}</h2>
+          
+          <!-- Color theme -->
+          {inc{/elements/music-settings/templates/theme/color-theme.html}}
+
+          <!-- Swatches -->
+          {inc{/elements/music-settings/templates/theme/swatches.html}}
+
+          <!-- Custom CSS -->
+          {inc{/elements/music-settings/templates/theme/custom-css.html}}
+        </div>
+      </div>
+
+      <div
+      class="tab"
+      data-tab-name="{i18n{settings.tab-name-advanced}}"
+      data-tab-slug="advanced"
+      data-tab-icon="dungeon">
+
+        <div class="settings-pane">
+          <h2>{i18n{settings.tab-name-general}}</h2>
+
+          <!-- Developer -->
+          {inc{/elements/music-settings/templates/advanced/developer.html}}
+
+          <!-- Factory reset -->
+          {inc{/elements/music-settings/templates/advanced/factory-reset.html}}
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
