@@ -1,17 +1,8 @@
 import __ from '../../../node_modules/double-u/index.js'
-import i18n from '../../../node_modules/i18n.js/index.js'
 import Lowrider from '../../../node_modules/lowrider.js/index.js'
 import consoleMessage from './console-message.js'
 import { announcementHandler } from './announcement-hooks.js'
-import { registerGlobalTooltipListener }  from '../../tooltip/tooltip.js'
 import * as keyboardHelpers from './keyboard-helpers.js'
-import * as modal from '../../modal.js'
-
-// not happy about this dep because it's outside the AppBase scope, but not sure
-// of a cleaner way to init the global ContextMenu helpers without being forced
-// to import the ContextMenu into pretty much every other custom element.
-// I want the ContextMenu to live on the same level as the Bridge, Router, etc
-import { ContextMenu } from '../context-menu/ContextMenu.js'
 
 /**
  * The AppBase class is meant to serve as the highest level scope in the UI, and
@@ -31,15 +22,6 @@ export default class AppBase extends Lowrider {
 
     this.maybeEnableDeveloperMode()
 
-    const userSelectedLang = await Bridge.ipcAsk('get-option', 'lang')
-
-    // the app is hardcoded to start in english when the router is inited,
-    // but if the user selected a lang other than that, we'll quickly switch the
-    // lang.
-    if (Router.currentLang === 'en' && userSelectedLang !== 'en') {
-      Router.setLang(userSelectedLang)
-    }
-
     this.boundAnnouncementListener = announcementHandler.bind(this)
     this.boundOnDocumentKeyDown = this.onDocumentKeyDown.bind(this)
     this.boundOnDocumentKeyUp = this.onDocumentKeyUp.bind(this)
@@ -51,18 +33,15 @@ export default class AppBase extends Lowrider {
       document.querySelector('#user-custom-css').remove()
     }
 
-    // tooltip event listeners
-    registerGlobalTooltipListener()
-
-    // modal event listeners
-    this.enableModals()
-
     // keyboard helper event listeners
     keyboardHelpers.register(this)
 
     // main process announcements listener
     // @listens announcements
     Bridge.ipcListen('announcements', this.boundAnnouncementListener)
+
+    // set OS attribute
+    __(this).attr('os', Bridge.os)
 
     // wait 4 seconds before checking for updates, if auto update is enabled
     setTimeout(async () => {
@@ -411,7 +390,10 @@ export default class AppBase extends Lowrider {
 
       // esc
       case 27:
-        ContextMenu.closeAllContextMenus()
+        if ('ContextMenu' in window) {
+          ContextMenu.closeAllContextMenus()
+        }
+          
         modal.closeAll()
         __('context-menu').each(el => el.closeAll())
         break

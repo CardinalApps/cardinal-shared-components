@@ -1,7 +1,7 @@
 const subscriber = (optionChange) => {
   // the moment the language is changed, the entire <music-app> becomes stale and must be rerendered
   if (optionChange.option === 'lang') {
-    console.log('Rerendering <music-app> to change language')
+    console.log('Rerendering #app to change language')
 
     // set the new lang, the app will read this value on rerender
     Router.setLang(optionChange.newValue)
