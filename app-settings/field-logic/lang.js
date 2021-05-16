@@ -6,7 +6,7 @@ const subscriber = (optionChange) => {
     // set the new lang, the app will read this value on rerender
     Router.setLang(optionChange.newValue)
 
-    document.querySelector('music-app').render()
+    document.querySelector('#app').render()
   }
 }
 
