@@ -33,12 +33,11 @@ export default class AppBase extends Lowrider {
       document.querySelector('#user-custom-css').remove()
     }
 
+    // modal event listeners
+    this.enableModals()
+
     // keyboard helper event listeners
     keyboardHelpers.register(this)
-
-    // main process announcements listener
-    // @listens announcements
-    Bridge.ipcListen('announcements', this.boundAnnouncementListener)
 
     // set OS attribute
     __(this).attr('os', Bridge.os)
@@ -241,7 +240,9 @@ export default class AppBase extends Lowrider {
    * Registers common event handlers that all apps wanna use.
    */
   registerCommonEventHandlers() {
-    Bridge.removeListener('announcements', this.boundAnnouncementListener)
+    // main process announcements listener
+    // @listens announcements
+    Bridge.ipcListen('announcements', this.boundAnnouncementListener)
     document.addEventListener('keydown', this.boundOnDocumentKeyDown)
     document.addEventListener('keyup', this.boundOnDocumentKeyUp)
     window.addEventListener('resize', this.boundOnWindowResize)
@@ -308,6 +309,7 @@ export default class AppBase extends Lowrider {
    * that exist in a higher scope than this element.
    */
   removeCommonEventHandlers() {
+    Bridge.removeListener('announcements', this.boundAnnouncementListener)
     document.removeEventListener('keydown', this.boundOnDocumentKeyDown)
     document.removeEventListener('keyup', this.boundOnDocumentKeyUp)
     window.removeEventListener('resize', this.boundOnWindowResize)
@@ -412,14 +414,20 @@ export default class AppBase extends Lowrider {
 
   /**
    * General modal listener, delegated to music-app.
+   * 
+   * The extending class should implement `this.modal`.
    */
   enableModals() {
-    __('[data-modal]').on('click', this, async function(event) {
-      let opener = __(this)
+    __('[data-modal]').on('click', this, async (event) => {
+      let opener = __(event.target)
       let modalSelector = opener.attr('data-modal')
       let modalEl = document.querySelector(modalSelector)
 
-      modal.show(opener.closest('music-app').el(), modalEl)
+      if ('modal' in this) {
+        this.modal.show(opener.closest('#app').el(), modalEl)
+      } else {
+        console.warn('No `modal` handler set.')
+      }
     })
   }
 
