@@ -1,4 +1,5 @@
 import __ from '../../../node_modules/double-u/index.js'
+import { html } from '../../../node_modules/html.js/index.js'
 import Lowrider from '../../../node_modules/lowrider.js/index.js'
 import consoleMessage from './console-message.js'
 import { announcementHandler } from './announcement-hooks.js'
@@ -150,7 +151,11 @@ export default class AppBase extends Lowrider {
   async showConnectionLockScreen(message) {
     let messageAttr = message ? `message="${message}"` : ''
 
-    __(this).prependHtml(`<server-connect overlay ${messageAttr}></server-connect`)
+    __(this).prependHtml(await html(/*html*/`
+      <div id="win32-window-controls" class="win32-only">
+        {inc{/elements/music-app/templates/win32-window-control-buttons.html}}
+      </div>
+      <server-connect overlay ${messageAttr}></server-connect>`))
   }
 
   /**
