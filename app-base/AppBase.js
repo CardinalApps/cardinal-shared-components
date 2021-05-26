@@ -102,6 +102,9 @@ export default class AppBase extends Lowrider {
    * Attempts to connect to a Hydra Server. Will check that the HTTP API is
    * connectable and will establish a WebSocket connection.
    * 
+   * If the HTTP connection is not available, the WebSocket connection will not
+   * be attempted. This is to avoid the inevitable timeout.
+   * 
    * @param {string} host - Host (domain, IP, whatever).
    * @param {(string|number)} port
    * @returns {boolean} True if the server is connectable and it returns the
@@ -119,10 +122,11 @@ export default class AppBase extends Lowrider {
         'scheme': 'http://'
       })
     } catch (error) {
-      console.log('HTTP connection to server failed')
+      console.log('HTTP connection to Cardinal Server cannot be established. Not attempting WebSocket connection.')
+      return false
     }
 
-    // attempt WebSocket connection. the Hydra server uses the port number +1
+    // attempt WebSocket connection. the server uses the port number +1
     // for WebSockets
     try {
       await Bridge.init('ws', {
