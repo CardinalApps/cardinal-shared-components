@@ -44,11 +44,13 @@ export default class AppBase extends Lowrider {
     __(this).attr('os', Bridge.os)
 
     // wait 4 seconds before checking for updates, if auto update is enabled
-    setTimeout(async () => {
-      if (await Bridge.ipcAsk('get-option', 'auto_check_for_updates')) {
-        this.checkForUpdates()
-      }
-    }, 4000)
+    if (this.getAttribute('env') === 'electron') {
+      setTimeout(async () => {
+        if (await Bridge.ipcAsk('get-option', 'auto_check_for_updates')) {
+          this.checkForUpdates()
+        }
+      }, 4000)
+    }
   }
 
   /**
@@ -203,11 +205,37 @@ export default class AppBase extends Lowrider {
     // show connection screen
     if (await this.connectToServer(defaultServer.server_host, defaultServer.server_port_http)) {
       console.log(`AutoConnect: Automatically connected to server at ${defaultServerString}.`)
+      
+      // is this the best place for this?
+      // with the vanilla env, we can't even load
+      // the app without the connection in the http first place, so it's safe to use
+      // http for getting the strings.
+      // with the electron env, there's the possibility of no http connection,
+      // so we gotta get the strings earlier via ipc instead of here.
+      await this.maybeSetI18nViaHttp()
+
       return true
     } else {
       console.log(`AutoConnect: Could not connect to server at ${defaultServerString}`)
       this.showConnectionLockScreen('autoconnect-failed')
       return false
+    }
+  }
+
+  /**
+   * Gets all of the strings that the app needs via HTTP and sets them to
+   * `window.i18n`.
+   */
+  async maybeSetI18nViaHttp() {
+    // if the strings weren't loaded earlier via IPC, we need them now via HTTP
+    if (!window.i18n) {
+      let i18nReq = await Bridge.httpApi('/i18n')
+
+      if (i18nReq.status === 200) {
+        window.i18n = i18nReq.response
+      } else {
+        console.error('i18n strings HTTP route did not return with status 200')
+      }
     }
   }
 
@@ -442,6 +470,7 @@ export default class AppBase extends Lowrider {
 
   // TODO why is this unfinished?
   async checkForUpdates() {
+    if (this.getAttribute('env') !== 'electron') return console.warn('Updates only available in Electron.')
     Bridge.ipcSay('check-for-updates-silently')
   }
 }
