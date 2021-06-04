@@ -7,8 +7,8 @@
 import __ from '../../../node_modules/double-u/index.js'
 
 /**
- * Directly called by the ipc listener for the 'announcements' channel.
- */
+* Directly called by the ipc listener for the 'announcements' channel.
+*/
 export async function announcementHandler(announcement, event) {
   console.log(`%c${announcement.action}`, 'color:#f39a11;')
 
@@ -91,24 +91,21 @@ export async function announcementHandler(announcement, event) {
       break
 
     case 'zoom-in':
-      // zoom is controlled manually in Electron
-      if (Bridge.type === 'Electron') {
+      if (__('#app').attr('env') === 'electron') {
         const { webFrame } = require('electron')
         webFrame.setZoomLevel(webFrame.getZoomLevel() + 0.5)
       }
       break
 
     case 'zoom-out':
-      // zoom is controlled manually in Electron
-      if (Bridge.type === 'Electron') {
+      if (__('#app').attr('env') === 'electron') {
         const { webFrame } = require('electron')
         webFrame.setZoomLevel(webFrame.getZoomLevel() - 0.5)
       }
       break
 
     case 'reset-zoom':
-      // zoom is controlled manually in Electron
-      if (Bridge.type === 'Electron') {
+      if (__('#app').attr('env') === 'electron') {
         const { webFrame } = require('electron')
         webFrame.setZoomLevel(0)
       }

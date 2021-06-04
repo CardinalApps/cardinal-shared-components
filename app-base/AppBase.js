@@ -433,7 +433,7 @@ export default class AppBase extends Lowrider {
           ContextMenu.closeAllContextMenus()
         }
           
-        modal.closeAll()
+        this.modal.closeAll()
         __('context-menu').each(el => el.closeAll())
         break
     }
