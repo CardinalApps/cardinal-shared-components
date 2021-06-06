@@ -7,8 +7,8 @@
 import __ from '../../../node_modules/double-u/index.js'
 
 /**
-* Directly called by the ipc listener for the 'announcements' channel.
-*/
+ * Directly called by the ipc listener for the 'announcements' channel.
+ */
 export async function announcementHandler(announcement, event) {
   console.log(`%c${announcement.action}`, 'color:#f39a11;')
 
@@ -77,17 +77,16 @@ export async function announcementHandler(announcement, event) {
       this.showWelcome()
       break
 
-    case 'show-attributions':
-      this.showAttributions()
+    // case 'show-attributions':
+    //   this.showAttributions()
+    //   break
+
+    case 'show-open-source':
+      this.showOpenSource()
       break
 
     case 'show-about':
       this.showAbout()
-      break
-
-    case 'new-cloud-provider':
-      await this.setCloudMusicStatus()
-      __(this).find('music-settings').el().updateCloudMusicAccounts()
       break
 
     case 'zoom-in':

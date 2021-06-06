@@ -30,8 +30,10 @@ export default class AppBase extends Lowrider {
 
     // create a global function that allows the user to disable the custom CSS via
     // the console
-    window.disableUserCSS = () => {
+    window.disableCustomCSS = () => {
       document.querySelector('#user-custom-css').remove()
+      document.querySelector('textarea[name="custom_css"]').value = ''
+      window.localStorage.removeItem('custom_css')
     }
 
     // modal event listeners
@@ -41,12 +43,12 @@ export default class AppBase extends Lowrider {
     keyboardHelpers.register(this)
 
     // set OS attribute
-    __(this).attr('os', Bridge.os)
+    __(this).attr('os', process.platform)
 
     // wait 4 seconds before checking for updates, if auto update is enabled
     if (this.getAttribute('env') === 'electron') {
       setTimeout(async () => {
-        if (await Bridge.ipcAsk('get-option', 'auto_check_for_updates')) {
+        if (JSON.parse(window.localStorage.getItem('auto_check_for_updates'))) {
           this.checkForUpdates()
         }
       }, 4000)
@@ -59,9 +61,11 @@ export default class AppBase extends Lowrider {
    * 
    * @param {boolean} [disable] - Set to `false` to disable developer mode.
    */
-  async maybeEnableDeveloperMode(disable) {
-    if (await Bridge.ipcAsk('get-option', 'developer_mode')) {
+  async maybeEnableDeveloperMode() {
+    if (JSON.parse(window.localStorage.getItem('developer_mode'))) {
       this.enableDeveloperMode()
+    } else {
+      this.enableDeveloperMode(false)
     }
   }
 
@@ -243,7 +247,7 @@ export default class AppBase extends Lowrider {
    * Injects the custom css from the database into the <head>.
    */
   async injectCustomCss() {
-    let customCss = await Bridge.ipcAsk('get-option', 'custom_css')
+    let customCss = window.localStorage.getItem('custom_css')
 
     // remove old custom css
     let existingCustomCssEl = document.querySelector('#user-custom-css')
@@ -259,10 +263,11 @@ export default class AppBase extends Lowrider {
 
   /**
    * Checks the database for the color theme and accent color and applies them.
+   * Defaults to dark mode. The default accent color is hard coded in the SCSS.
    */
   async setColors() {
-    let colorTheme = await Bridge.ipcAsk('get-option', 'color_theme')
-    let accentColor = await Bridge.ipcAsk('get-option', 'accent_color')
+    let colorTheme = window.localStorage.getItem('color_theme') || 'dark'
+    let accentColor = window.localStorage.getItem('accent_color')
 
     if (colorTheme) {
       __(this).attr('color-theme', colorTheme)
