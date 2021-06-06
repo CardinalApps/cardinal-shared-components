@@ -147,7 +147,7 @@ export class AppSettings extends Lowrider {
         newVal = __(el).value()
       }
 
-      console.log(optionName, newVal)
+      //console.log(optionName, newVal)
 
       window.localStorage.setItem(optionName, newVal)
       // Bridge.ipcAsk('set-option', {'option': optionName, 'value': newVal})
