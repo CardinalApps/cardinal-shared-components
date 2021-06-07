@@ -17,6 +17,12 @@
   //   'option': 'accent_color',
   //   'value': color
   // })
-      
+  
+  let active = event.target.closest('.settings-panel').querySelector('.swatches .active')
+  if (active) {
+    active.classList.remove('active')
+  }
+  
+  event.target.closest('label').classList.add('active')
   document.documentElement.style.setProperty('--accent-color', newValue)
 }

@@ -53,7 +53,7 @@ export class AppSettings extends Lowrider {
     // make the currently selected accent color swatch active
     let chosenAccentColor = window.localStorage.getItem('accent_color')
     if (chosenAccentColor) {
-      this.querySelector(`input[name="accent_color"][value="${chosenAccentColor}"]`).checked = true
+      this.querySelector(`input[name="accent_color"][value="${chosenAccentColor}"]`).closest('label').classList.add('active')
     }
   }
 
@@ -152,7 +152,7 @@ export class AppSettings extends Lowrider {
         newVal = __(el).value()
       }
 
-      console.log(optionName, newVal)
+      //console.log(optionName, newVal)
 
       window.localStorage.setItem(optionName, newVal)
       // Bridge.ipcAsk('set-option', {'option': optionName, 'value': newVal})
