@@ -36,8 +36,8 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * Call this to init all settings fields.
-   */
+  * Call this to init all settings fields.
+  */
   formSetup() {
     forms.prepare(this.querySelector(this.formId))
     this.setSyncGroups()
@@ -49,22 +49,27 @@ export class AppSettings extends Lowrider {
     })
 
     this.watchSyncGroups()
+
+    // make the currently selected accent color swatch active
+    let chosenAccentColor = window.localStorage.getItem('accent_color')
+    if (chosenAccentColor) {
+      this.querySelector(`input[name="accent_color"][value="${chosenAccentColor}"]`).checked = true
+    }
   }
 
   /**
-   * Some fields are too simple to require their own module. Register their events here.
-   */
+  * Some fields are too simple to require their own module. Register their events here.
+  */
   registerFieldEventListeners() {
     this.registerCallback('onSettingChange', onLangChange)
     this.registerCallback('onSettingChange', onColorThemeChange)
-    this.registerCallback('onSettingChange', onAccentColorChange)
     this.registerCallback('onSettingChange', onAccentColorChange)
     this.registerCallback('onSettingChange', onCustomCssChange)
     this.registerCallback('onSettingChange', onDeveloperModeChange)
 
     /**
-     * When factory reset is clicked
-     */
+    * When factory reset is clicked
+    */
     let resetBtn = __(this).find(`${this.formId} button[name="factory-reset"]`)
 
     if (resetBtn.els.length) {
@@ -83,10 +88,10 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * Triggered whenever an element with the data-settings attribute is clicked.
-   * These buttons exist outside of the settings panel, and are used to open the
-   * panel.
-   */
+  * Triggered whenever an element with the data-settings attribute is clicked.
+  * These buttons exist outside of the settings panel, and are used to open the
+  * panel.
+  */
   onDataSettingsAttrClick(event) {
     let tabToShow = __(event.target).attr('data-settings')
 
@@ -98,8 +103,8 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * Sets the values for the inputs within [data-sync-with-db] upon modal load
-   */
+  * Sets the values for the inputs within [data-sync-with-db] upon modal load
+  */
   setSyncGroups() {
     __(`${this.formId} [data-sync-with-db]`).each(async (el) => {
       let optionName = __(el).attr('name')
@@ -116,7 +121,7 @@ export class AppSettings extends Lowrider {
         optionValue = converted
       } catch (e) {}
 
-      if (el.matches('[type="checkbox"]')) {
+      if (el.matches('[type="checkbox"]') || el.matches('[type="radio"]')) {
         if (optionValue) {
           el.checked = true
         } else if (!optionValue) {
@@ -129,10 +134,10 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * There are .field-group's in the settings <form> that have
-   * [data-sync-with-db], this function will watch them and sync their
-   * changes within the table.
-   */
+  * There are .field-group's in the settings <form> that have
+  * [data-sync-with-db], this function will watch them and sync their
+  * changes within the table.
+  */
   watchSyncGroups() {
     const fieldChange = (event) => {
       let el = event.target
@@ -147,7 +152,7 @@ export class AppSettings extends Lowrider {
         newVal = __(el).value()
       }
 
-      //console.log(optionName, newVal)
+      console.log(optionName, newVal)
 
       window.localStorage.setItem(optionName, newVal)
       // Bridge.ipcAsk('set-option', {'option': optionName, 'value': newVal})
@@ -164,10 +169,10 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * Visually shows the settings panel to the user.
-   * 
-   * @param {string} tabToShow - The name of the tab to show on init. Defaults to the last open tab, or the first tab.
-   */
+  * Visually shows the settings panel to the user.
+  * 
+  * @param {string} tabToShow - The name of the tab to show on init. Defaults to the last open tab, or the first tab.
+  */
   openSettingsPanel(tabToShow) {
     // if it's already open, do nothing
     if (__('.settings-panel').hasClass('open')) return
@@ -189,19 +194,19 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * Allows other custom elements to register a callback with the settings.
-   * 
-   * @param {string} event - The event type. Supports `onClose`.
-   */
+  * Allows other custom elements to register a callback with the settings.
+  * 
+  * @param {string} event - The event type. Supports `onClose`.
+  */
   registerCallback(event, cb) {
     this._callbacks[event].push(cb)
   }
 
   /**
-   * See getFieldTemplate()
-   * 
-   * Returns an object of all strigified templates.
-   */
+  * See getFieldTemplate()
+  * 
+  * Returns an object of all strigified templates.
+  */
   getFieldTemplates() {
     let templates = [
       'advanced/developer',
@@ -226,20 +231,20 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-   * I really hate to embed HTML in JS like this, but because of this bug...
-   *
-   * https://github.com/electron-userland/electron-builder/issues/3185
-   *
-   * ...I cannot have HTML files in a renderer node_modules, because they won't
-   * be copied into the asar archive. The only templates affected are the global
-   * ones shared between all client apps in the `cardinal-shared-components`
-   * package.
-   *
-   * The plan is to serve HTML templates with the API for mobile device support,
-   * so until then, this will have to do.
-   * 
-   * FIXME
-   */
+  * I really hate to embed HTML in JS like this, but because of this bug...
+  *
+  * https://github.com/electron-userland/electron-builder/issues/3185
+  *
+  * ...I cannot have HTML files in a renderer node_modules, because they won't
+  * be copied into the asar archive. The only templates affected are the global
+  * ones shared between all client apps in the `cardinal-shared-components`
+  * package.
+  *
+  * The plan is to serve HTML templates with the API for mobile device support,
+  * so until then, this will have to do.
+  * 
+  * FIXME
+  */
   getFieldTemplate(field) {
     switch (field) {
       case 'advanced/developer':
@@ -412,16 +417,16 @@ export class AppSettings extends Lowrider {
           <h4 class="group-title">{i18n{settings.accent-color.title}}</h4>
 
           <div class="swatches">
-            <input type="radio" name="accent_color" data-sync-with-db title="The Last Popsicles Purple" type="button" class="color-swatch clicks" value="#a174dd" style="background-color:#a174dd;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Flamingo Jam Pink" type="button" class="color-swatch clicks" value="#e9219c" style="background-color:#e9219c;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Rapper Name lil'Blue" type="button" class="color-swatch clicks" value="#4da3bd" style="background-color:#4da3bd;">
-            <input type="radio" name="accent_color" data-sync-with-db title="The Bold and the Bluetiful" type="button" class="color-swatch clicks" value="#3793cf" style="background-color:#3793cf;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Cantaloupe Green" type="button" class="color-swatch clicks" value="#57b983" style="background-color:#57b983;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Zergling Rush! Green" type="button" class="color-swatch clicks" value="#379c3f" style="background-color:#379c3f;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Nuclear Warning Yellow" type="button" class="color-swatch clicks" value="#ccb118" style="background-color:#ccb118;">
-            <input type="radio" name="accent_color" data-sync-with-db title="At Least It's Not Brown, Orange" type="button" class="color-swatch clicks" value="#d45912" style="background-color:#d45912;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Alien Invasion Red" type="button" class="color-swatch clicks" value="#cc4c43" style="background-color:#cc4c43;">
-            <input type="radio" name="accent_color" data-sync-with-db title="Soulless Grey" type="button" class="color-swatch clicks" value="#575757" style="background-color:#575757;">
+            <input type="radio" name="accent_color" data-sync-with-db title="The Last Popsicles Purple" type="button" class="color-swatch clicks" value="#a174dd">
+            <input type="radio" name="accent_color" data-sync-with-db title="Flamingo Jam Pink" type="button" class="color-swatch clicks" value="#e9219c">
+            <input type="radio" name="accent_color" data-sync-with-db title="Rapper Name lil'Blue" type="button" class="color-swatch clicks" value="#4da3bd">
+            <input type="radio" name="accent_color" data-sync-with-db title="The Bold and the Bluetiful" type="button" class="color-swatch clicks" value="#3793cf">
+            <input type="radio" name="accent_color" data-sync-with-db title="Cantaloupe Green" type="button" class="color-swatch clicks" value="#57b983">
+            <input type="radio" name="accent_color" data-sync-with-db title="Zergling Rush! Green" type="button" class="color-swatch clicks" value="#379c3f">
+            <input type="radio" name="accent_color" data-sync-with-db title="Nuclear Warning Yellow" type="button" class="color-swatch clicks" value="#ccb118">
+            <input type="radio" name="accent_color" data-sync-with-db title="At Least It's Not Brown, Orange" type="button" class="color-swatch clicks" value="#d45912">
+            <input type="radio" name="accent_color" data-sync-with-db title="Alien Invasion Red" type="button" class="color-swatch clicks" value="#cc4c43">
+            <input type="radio" name="accent_color" data-sync-with-db title="Soulless Grey" type="button" class="color-swatch clicks" value="#575757">
           </div>
         </div>`
     }
