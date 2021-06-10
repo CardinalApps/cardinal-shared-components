@@ -417,7 +417,7 @@ export class AppSettings extends Lowrider {
           <h4 class="group-title">{i18n{settings.accent-color.title}}</h4>
 
           <div class="swatches">
-            <input type="radio" name="accent_color" data-sync-with-db title="The Last Popsicles Purple" type="button" class="color-swatch clicks" value="#a174dd">
+            <input type="radio" name="accent_color" data-sync-with-db title="The Last Popsicle Purple" type="button" class="color-swatch clicks" value="#a174dd">
             <input type="radio" name="accent_color" data-sync-with-db title="Flamingo Jam Pink" type="button" class="color-swatch clicks" value="#e9219c">
             <input type="radio" name="accent_color" data-sync-with-db title="Rapper Name lil'Blue" type="button" class="color-swatch clicks" value="#4da3bd">
             <input type="radio" name="accent_color" data-sync-with-db title="The Bold and the Bluetiful" type="button" class="color-swatch clicks" value="#3793cf">
