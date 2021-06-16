@@ -117,7 +117,15 @@ export class AppSettings extends Lowrider {
   setSyncGroups() {
     __(`${this.formId} [data-sync-with-db]`).each(async (el) => {
       let optionName = __(el).attr('name')
-      let optionValue = window.localStorage.getItem(optionName)
+      let fromDatabase = __(el).attr('data-db')
+
+      let optionValue
+
+      if (fromDatabase === 'electron-main') {
+        optionValue = await Bridge.ipcAsk('get-option', optionName)
+      } else {
+        optionValue = window.localStorage.getItem(optionName)
+      }
 
       //console.log(optionName, optionValue)
 
@@ -148,9 +156,10 @@ export class AppSettings extends Lowrider {
    * changes within the table.
    */
   watchSyncGroups() {
-    const fieldChange = (event) => {
+    const fieldChange = async (event) => {
       let el = event.target
       let optionName = __(el).attr('name')
+      let destinationDatabase = __(el).attr('data-db') // can be 'electron-main' or omitted for localStorage
       let newVal
       
       if (__(el).attr('type') === 'checkbox') {
@@ -161,10 +170,13 @@ export class AppSettings extends Lowrider {
         newVal = __(el).value()
       }
 
-      //console.log(optionName, newVal)
-
-      window.localStorage.setItem(optionName, newVal)
-      // Bridge.ipcAsk('set-option', {'option': optionName, 'value': newVal})
+      if (destinationDatabase === 'electron-main') {
+        console.log('Setting option in Electron sqlite database', optionName, newVal)
+        await Bridge.ipcAsk('set-option', {'option': optionName, 'value': newVal})
+      } else {
+        console.log('Setting option in localStorage', optionName, newVal)
+        window.localStorage.setItem(optionName, newVal)
+      }
 
       if (this._callbacks.onSettingChange.length) {
         for (let cb of this._callbacks.onSettingChange) {
@@ -221,6 +233,7 @@ export class AppSettings extends Lowrider {
       'advanced/developer',
       'advanced/factory-reset',
       'general/lang',
+      'general/confirm-electron-quit',
       'general/notifications',
       'general/start-page',
       'general/updates',
@@ -293,6 +306,12 @@ export class AppSettings extends Lowrider {
           <input type="checkbox" data-sync-with-db name="notification_on_song_change" data-label="{i18n{settings.notifications.song-change-label}}">
         </div>`
 
+      case 'general/confirm-electron-quit':
+        return /*html*/`
+        <div class="form-group">
+          <input type="checkbox" data-sync-with-db data-db="electron-main" name="confirm_electron_quit" data-label="{i18n{settings.confirm-electron-quit}}">
+        </div>`
+
       case 'general/start-page':
         return /*html*/`
         <div class="form-group">
@@ -313,7 +332,7 @@ export class AppSettings extends Lowrider {
       case 'general/updates':
         return /*html*/`
         <div class="form-group">
-          <h4 class="group-title">{i18n{settings.updates.title}}</h4>
+          <!-- <h4 class="group-title">{i18n{settings.updates.title}}</h4> -->
 
           <input type="checkbox" data-sync-with-db name="auto_check_for_updates" data-label="{i18n{settings.updates.auto-check-label}}">
         </div>
