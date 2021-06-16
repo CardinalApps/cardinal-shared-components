@@ -36,8 +36,8 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * Call this to init all settings fields.
-  */
+   * Call this to init all settings fields.
+   */
   formSetup() {
     forms.prepare(this.querySelector(this.formId))
     this.setSyncGroups()
@@ -58,8 +58,8 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * Some fields are too simple to require their own module. Register their events here.
-  */
+   * Some fields are too simple to require their own module. Register their events here.
+   */
   registerFieldEventListeners() {
     this.registerCallback('onSettingChange', onLangChange)
     this.registerCallback('onSettingChange', onColorThemeChange)
@@ -68,8 +68,8 @@ export class AppSettings extends Lowrider {
     this.registerCallback('onSettingChange', onDeveloperModeChange)
 
     /**
-    * When factory reset is clicked
-    */
+     * When factory reset is clicked
+     */
     let resetBtn = __(this).find(`${this.formId} button[name="factory-reset"]`)
 
     if (resetBtn.els.length) {
@@ -85,13 +85,23 @@ export class AppSettings extends Lowrider {
         })
       })
     }
+
+    /**
+     * Manually check for updates
+     */
+    __(this).find(`${this.formId} button[name="manually-check-for-updates"]`).each((el) => {
+      el.addEventListener('click', async () => {
+        console.log('a')
+        await Bridge.ipcSay('check-for-updates-and-prompt')
+      })
+    })
   }
 
   /**
-  * Triggered whenever an element with the data-settings attribute is clicked.
-  * These buttons exist outside of the settings panel, and are used to open the
-  * panel.
-  */
+   * Triggered whenever an element with the data-settings attribute is clicked.
+   * These buttons exist outside of the settings panel, and are used to open the
+   * panel.
+   */
   onDataSettingsAttrClick(event) {
     let tabToShow = __(event.target).attr('data-settings')
 
@@ -103,8 +113,8 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * Sets the values for the inputs within [data-sync-with-db] upon modal load
-  */
+   * Sets the values for the inputs within [data-sync-with-db] upon modal load
+   */
   setSyncGroups() {
     __(`${this.formId} [data-sync-with-db]`).each(async (el) => {
       let optionName = __(el).attr('name')
@@ -134,10 +144,10 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * There are .field-group's in the settings <form> that have
-  * [data-sync-with-db], this function will watch them and sync their
-  * changes within the table.
-  */
+   * There are .field-group's in the settings <form> that have
+   * [data-sync-with-db], this function will watch them and sync their
+   * changes within the table.
+   */
   watchSyncGroups() {
     const fieldChange = (event) => {
       let el = event.target
@@ -169,10 +179,10 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * Visually shows the settings panel to the user.
-  * 
-  * @param {string} tabToShow - The name of the tab to show on init. Defaults to the last open tab, or the first tab.
-  */
+   * Visually shows the settings panel to the user.
+   * 
+   * @param {string} tabToShow - The name of the tab to show on init. Defaults to the last open tab, or the first tab.
+   */
   openSettingsPanel(tabToShow) {
     // if it's already open, do nothing
     if (__('.settings-panel').hasClass('open')) return
@@ -194,19 +204,19 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * Allows other custom elements to register a callback with the settings.
-  * 
-  * @param {string} event - The event type. Supports `onClose`.
-  */
+   * Allows other custom elements to register a callback with the settings.
+   * 
+   * @param {string} event - The event type. Supports `onClose`.
+   */
   registerCallback(event, cb) {
     this._callbacks[event].push(cb)
   }
 
   /**
-  * See getFieldTemplate()
-  * 
-  * Returns an object of all strigified templates.
-  */
+   * See getFieldTemplate()
+   * 
+   * Returns an object of all strigified templates.
+   */
   getFieldTemplates() {
     let templates = [
       'advanced/developer',
@@ -231,20 +241,20 @@ export class AppSettings extends Lowrider {
   }
 
   /**
-  * I really hate to embed HTML in JS like this, but because of this bug...
-  *
-  * https://github.com/electron-userland/electron-builder/issues/3185
-  *
-  * ...I cannot have HTML files in a renderer node_modules, because they won't
-  * be copied into the asar archive. The only templates affected are the global
-  * ones shared between all client apps in the `cardinal-shared-components`
-  * package.
-  *
-  * The plan is to serve HTML templates with the API for mobile device support,
-  * so until then, this will have to do.
-  * 
-  * FIXME
-  */
+   * I really hate to embed HTML in JS like this, but because of this bug...
+   *
+   * https://github.com/electron-userland/electron-builder/issues/3185
+   *
+   * ...I cannot have HTML files in a renderer node_modules, because they won't
+   * be copied into the asar archive. The only templates affected are the global
+   * ones shared between all client apps in the `cardinal-shared-components`
+   * package.
+   *
+   * The plan is to serve HTML templates with the API for mobile device support,
+   * so until then, this will have to do.
+   * 
+   * FIXME
+   */
   getFieldTemplate(field) {
     switch (field) {
       case 'advanced/developer':
@@ -303,10 +313,14 @@ export class AppSettings extends Lowrider {
 
       case 'general/updates':
         return /*html*/`
-        <div class="form-group"b>
+        <div class="form-group">
           <h4 class="group-title">{i18n{settings.updates.title}}</h4>
 
           <input type="checkbox" data-sync-with-db name="auto_check_for_updates" data-label="{i18n{settings.updates.auto-check-label}}">
+        </div>
+        
+        <div class="form-group">
+          <button name="manually-check-for-updates" class="btn" type="button">{i18n{settings.updates.manual-check-label}}</button>
         </div>`
 
       case 'modals/folder-structure':
