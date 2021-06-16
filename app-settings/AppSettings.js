@@ -91,7 +91,6 @@ export class AppSettings extends Lowrider {
      */
     __(this).find(`${this.formId} button[name="manually-check-for-updates"]`).each((el) => {
       el.addEventListener('click', async () => {
-        console.log('a')
         await Bridge.ipcSay('check-for-updates-and-prompt')
       })
     })
