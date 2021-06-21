@@ -300,7 +300,7 @@ export class AppSettings extends Lowrider {
 
       case 'general/notifications':
         return /*html*/`
-        <div class="form-group" data-group="notifications">
+        <div class="form-group native-only" data-group="notifications">
           <h4 class="group-title">{i18n{settings.notifications.title}}</h4>
 
           <input type="checkbox" data-sync-with-db name="notification_on_song_change" data-label="{i18n{settings.notifications.song-change-label}}">
