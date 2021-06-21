@@ -271,7 +271,7 @@ export class AppSettings extends Lowrider {
     switch (field) {
       case 'advanced/developer':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group native-only" data-group="developer">
           <h4 class="group-title">{i18n{settings.developer.title}}</h4>
         
           <input type="checkbox" data-sync-with-db name="developer_mode" data-label="{i18n{settings.developer.enable-label}}">
@@ -279,7 +279,7 @@ export class AppSettings extends Lowrider {
 
       case 'advanced/factory-reset':
         return /*html*/`
-        <div class="form-group factory-reset-group">
+        <div class="form-group factory-reset-group native-only" data-group="factory-reset">
           <h4 class="group-title">{i18n{settings.factory-reset.title}}</h4>
 
           <button class="danger" type="button" name="factory-reset">
@@ -289,7 +289,7 @@ export class AppSettings extends Lowrider {
 
       case 'general/lang':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="language">
           <h4 class="group-title">{i18n{settings.language.title}}</h4>
 
           <select name="lang" data-sync-with-db>
@@ -300,7 +300,7 @@ export class AppSettings extends Lowrider {
 
       case 'general/notifications':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="notifications">
           <h4 class="group-title">{i18n{settings.notifications.title}}</h4>
 
           <input type="checkbox" data-sync-with-db name="notification_on_song_change" data-label="{i18n{settings.notifications.song-change-label}}">
@@ -308,13 +308,13 @@ export class AppSettings extends Lowrider {
 
       case 'general/confirm-electron-quit':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group native-only" data-group="confirm-quit">
           <input type="checkbox" data-sync-with-db data-db="electron-main" name="confirm_electron_quit" data-label="{i18n{settings.confirm-electron-quit}}">
         </div>`
 
       case 'general/start-page':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="start-page">
           <h4 class="group-title">{i18n{settings.start-page.title}}</h4>
 
           <select name="start_page" data-sync-with-db>
@@ -331,14 +331,14 @@ export class AppSettings extends Lowrider {
 
       case 'general/updates':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group native-only" data-group="updates">
           <!-- <h4 class="group-title">{i18n{settings.updates.title}}</h4> -->
 
           <input type="checkbox" data-sync-with-db name="auto_check_for_updates" data-label="{i18n{settings.updates.auto-check-label}}">
-        </div>
-        
-        <div class="form-group">
-          <button name="manually-check-for-updates" class="btn" type="button">{i18n{settings.updates.manual-check-label}}</button>
+
+          <div class="manual">
+            <button name="manually-check-for-updates" class="btn" type="button">{i18n{settings.updates.manual-check-label}}</button>
+          </div>
         </div>`
 
       case 'modals/folder-structure':
@@ -405,7 +405,7 @@ export class AppSettings extends Lowrider {
 
       case 'playback/flags':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="flags">
           <h4 class="group-title">{i18n{settings.music-playback.title}}</h4>
 
           <input type="checkbox" data-sync-with-db name="always_load_whole_song" data-label="{i18n{settings.music-playback.always-load-whole-song}}">
@@ -413,7 +413,7 @@ export class AppSettings extends Lowrider {
 
       case 'theme/color-theme':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="color-theme">
           <h4 class="group-title">{i18n{settings.color-theme.title}}</h4>
 
           <select name="color_theme" data-sync-with-db>
@@ -424,7 +424,7 @@ export class AppSettings extends Lowrider {
 
       case 'theme/custom-css':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="custom-css">
           <h4 class="group-title">{i18n{settings.custom-css.title}}</h4>
 
           <div class="instructions">
@@ -445,7 +445,7 @@ export class AppSettings extends Lowrider {
 
       case 'theme/swatches':
         return /*html*/`
-        <div class="form-group">
+        <div class="form-group" data-group="accent-color">
           <h4 class="group-title">{i18n{settings.accent-color.title}}</h4>
 
           <div class="swatches">
@@ -454,7 +454,7 @@ export class AppSettings extends Lowrider {
             <input type="radio" name="accent_color" data-sync-with-db title="Rapper Name lil'Blue" type="button" class="color-swatch clicks" value="#4da3bd">
             <input type="radio" name="accent_color" data-sync-with-db title="The Bold and the Bluetiful" type="button" class="color-swatch clicks" value="#3793cf">
             <input type="radio" name="accent_color" data-sync-with-db title="Cantaloupe Green" type="button" class="color-swatch clicks" value="#57b983">
-            <input type="radio" name="accent_color" data-sync-with-db title="Zergling Rush! Green" type="button" class="color-swatch clicks" value="#379c3f">
+            <input type="radio" name="accent_color" data-sync-with-db title="Zergling Rush Green" type="button" class="color-swatch clicks" value="#379c3f">
             <input type="radio" name="accent_color" data-sync-with-db title="Nuclear Warning Yellow" type="button" class="color-swatch clicks" value="#ccb118">
             <input type="radio" name="accent_color" data-sync-with-db title="At Least It's Not Brown, Orange" type="button" class="color-swatch clicks" value="#d45912">
             <input type="radio" name="accent_color" data-sync-with-db title="Alien Invasion Red" type="button" class="color-swatch clicks" value="#cc4c43">

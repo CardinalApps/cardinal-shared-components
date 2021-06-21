@@ -21,6 +21,7 @@ export default class AppBase extends Lowrider {
 
     consoleMessage()
 
+    this.disableTouchZoom()
     this.maybeEnableDeveloperMode()
 
     this.boundAnnouncementListener = announcementHandler.bind(this)
@@ -42,8 +43,13 @@ export default class AppBase extends Lowrider {
     // keyboard helper event listeners
     keyboardHelpers.register(this)
 
-    // set OS attribute
-    __(this).attr('os', process.platform)
+    // TODO move this to router.js
+    window.onbeforeunload = () => { return false }
+
+    // OS only matters in Electron
+    if (this.getAttribute('env') === 'electron') {
+      __(this).attr('os', process.platform)
+    }
 
     // wait 4 seconds before checking for updates, if auto update is enabled
     if (this.getAttribute('env') === 'electron') {
@@ -53,6 +59,15 @@ export default class AppBase extends Lowrider {
         }
       }, 4000)
     }
+  }
+
+  /**
+   * Currently seems like the best way to disable touch zooming since Apple
+   * stopped honoring the meta tag in iOS 10.
+   */
+  disableTouchZoom() {
+    if (!this.getAttribute('touch')) return
+    document.addEventListener('gesturestart', e => e.preventDefault())
   }
 
   /**
@@ -83,9 +98,9 @@ export default class AppBase extends Lowrider {
   }
 
   /**
-   * Checks the database to see if a default server has been saved. If one has
-   * been, the server row will be returned. If none exists, null will be
-   * returned.
+   * In Electron, this checks the database to see if a default server has been
+   * saved. If one has been, the server row will be returned. If none exists,
+   * null will be returned.
    *
    * @returns {(object|null)}
    */
@@ -194,35 +209,33 @@ export default class AppBase extends Lowrider {
       return true
     }
 
-    const defaultServer = await this.getDefaultServer()
-    
-    // no default server set has been set (might be first start up), show connection screen
-    if (!defaultServer) {
-      console.log('AutoConnect: No default server set, showing connection screen.')
-      this.showConnectionLockScreen()
-      return false
+    // on the web, the location of the server is the URL we are being delivered on
+    if (this.getAttribute('env') === 'web') {
+      return await this.connectToServer(window.location.hostname, window.location.port)
     }
-    
-    const defaultServerString = `${defaultServer.server_host}:${defaultServer.server_port_http}`
-    
-    // attempt to establish initial Bridge->Server connection. if it fails,
-    // show connection screen
-    if (await this.connectToServer(defaultServer.server_host, defaultServer.server_port_http)) {
-      console.log(`AutoConnect: Automatically connected to server at ${defaultServerString}.`)
+    // in Electron, ask Electron for the user selected default server
+    else if (this.getAttribute('env') === 'electron') {
+      const defaultServer = await this.getDefaultServer()
       
-      // is this the best place for this?
-      // with the vanilla env, we can't even load
-      // the app without the connection in the http first place, so it's safe to use
-      // http for getting the strings.
-      // with the electron env, there's the possibility of no http connection,
-      // so we gotta get the strings earlier via ipc instead of here.
-      await this.maybeSetI18nViaHttp()
-
-      return true
-    } else {
-      console.log(`AutoConnect: Could not connect to server at ${defaultServerString}`)
-      this.showConnectionLockScreen('autoconnect-failed')
-      return false
+      // no default server set has been set (might be first start up), show connection screen
+      if (!defaultServer) {
+        console.log('AutoConnect: No default server set, showing connection screen.')
+        this.showConnectionLockScreen()
+        return false
+      }
+      
+      const defaultServerString = `${defaultServer.server_host}:${defaultServer.server_port_http}`
+      
+      // attempt to establish initial Bridge->Server connection. if it fails,
+      // show connection screen
+      if (await this.connectToServer(defaultServer.server_host, defaultServer.server_port_http)) {
+        console.log(`AutoConnect: Automatically connected to server at ${defaultServerString}.`)
+        return true
+      } else {
+        console.log(`AutoConnect: Could not connect to server at ${defaultServerString}`)
+        this.showConnectionLockScreen('autoconnect-failed')
+        return false
+      }
     }
   }
 
