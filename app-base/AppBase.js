@@ -44,7 +44,9 @@ export default class AppBase extends Lowrider {
     keyboardHelpers.register(this)
 
     // TODO move this to router.js
-    window.onbeforeunload = () => { return false }
+    if (this.getAttribute('env') === 'web') {
+      window.onbeforeunload = () => { return false }
+    }
 
     // OS only matters in Electron
     if (this.getAttribute('env') === 'electron') {
@@ -175,7 +177,7 @@ export default class AppBase extends Lowrider {
    */
   async showConnectionLockScreen(message) {
     let messageAttr = message ? `message="${message}"` : ''
-
+    
     __(this).prependHtml(await html(/*html*/`
       <div id="win32-window-controls" class="win32-only">
         {inc{/elements/music-app/templates/win32-window-control-buttons.html}}

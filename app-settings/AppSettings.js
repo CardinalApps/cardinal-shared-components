@@ -424,7 +424,7 @@ export class AppSettings extends Lowrider {
 
       case 'theme/custom-css':
         return /*html*/`
-        <div class="form-group" data-group="custom-css">
+        <div class="form-group mouse-only" data-group="custom-css">
           <h4 class="group-title">{i18n{settings.custom-css.title}}</h4>
 
           <div class="instructions">
